@@ -27,7 +27,7 @@ module.exports = {
 	],
 	"rules": {
 		"block-spacing": ["warn", "always"],
-		"brace-style": ["warn", "1tbs", {"allowSingleLine": true}],
+		"brace-style": ["warn", "1tbs", { "allowSingleLine": true }],
 		"curly": ["warn", "all"],
 		"default-param-last": "warn",
 		"eol-last": ["warn", "always"],
@@ -40,10 +40,6 @@ module.exports = {
 				"SwitchCase": 1
 			}
 		],
-		"linebreak-style": [
-			"warn",
-			"windows"
-		],
 		"max-classes-per-file": ["warn", 1],
 		"max-len": ["error", 120],
 		"no-console": "error",
@@ -51,7 +47,7 @@ module.exports = {
 		"no-empty": ["error", { "allowEmptyCatch": true }],
 		"no-labels": "error",
 		"no-loop-func": "error",
-		"no-multi-spaces": ["warn", {"ignoreEOLComments": true}],
+		"no-multi-spaces": ["warn", { "ignoreEOLComments": true }],
 		"no-multiple-empty-lines": "warn",
 		"no-new": "error",
 		"no-self-compare": "warn",
@@ -59,7 +55,7 @@ module.exports = {
 		"no-shadow": "warn",
 		"no-unmodified-loop-condition": "error",
 		"no-void": "error",
-		"no-warning-comments": ["warn", {"terms": ["fixme", "tslint"]}],
+		"no-warning-comments": ["warn", { "terms": ["fixme", "tslint"] }],
 		"prefer-const": "warn",
 		"prefer-regex-literals": "warn",
 		"require-unicode-regexp": "error",
@@ -80,7 +76,7 @@ module.exports = {
 				}
 			}
 		],
-		"@typescript-eslint/camelcase": ["warn", {"allow": ["^_[a-z][A-Za-z0-9]*$"]}],
+		"@typescript-eslint/camelcase": ["warn", { "allow": ["^_[a-z][A-Za-z0-9]*$"] }],
 		"@typescript-eslint/explicit-function-return-type": "off",
 		"@typescript-eslint/no-empty-function": "off",
 		"@typescript-eslint/no-explicit-any": "off",
