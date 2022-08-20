@@ -68,14 +68,12 @@ export class ContextInternal {
 
 	public onSetAuthoritative = (userId: Guid) => {
 		this._rigidBodyOrphanSet.forEach( 
-			(value) => {
-				if (value === this._rigidBodyDefaultOwner) {
-					const actor = this.actorSet.get(value);
-					actor.owner = userId;
-
-					this._rigidBodyOwnerMap.set(value, userId);
-				}
-			})
+			(actorId) => {
+				const actor = this.actorSet.get(actorId);
+				actor.owner = userId;
+				this._rigidBodyOwnerMap.set(actorId, userId);
+			}
+		)
 		this._rigidBodyOrphanSet.clear();
 		this._rigidBodyDefaultOwner = userId;
 	};
@@ -453,11 +451,15 @@ export class ContextInternal {
 			actor.copy(sactor);
 			if (isNewActor) {
 				newActorIds.push(actor.id);
-				if (actor.rigidBody) {	
+				if (actor.rigidBody) {
 					if (!actor.owner) {
-						actor.owner = this._rigidBodyDefaultOwner;
+						if (!this._rigidBodyDefaultOwner) {
+							this._rigidBodyOrphanSet.add(actor.id);
+						} else {
+							actor.owner = this._rigidBodyDefaultOwner;
+							this._rigidBodyOwnerMap.set(actor.id, actor.owner);
+						}
 					}
-					this._rigidBodyOwnerMap.set(actor.id, actor.owner);
 				}
 			}
 		});
@@ -531,22 +533,23 @@ export class ContextInternal {
 			this.context.emitter.emit('user-left', user);
 
 			if (userId !== this._rigidBodyDefaultOwner) {
-				this._rigidBodyOwnerMap.forEach( (value, key) => {
-					if (value === userId) {
-						const actor = this.actorSet.get(key);
-						actor.owner = this._rigidBodyDefaultOwner;
-						this._rigidBodyOwnerMap.set(key, this._rigidBodyDefaultOwner);
+				this._rigidBodyOwnerMap.forEach( 
+					(ownerId, actorId) => {
+						if (ownerId === userId) {
+							const actor = this.actorSet.get(actorId);
+							actor.owner = this._rigidBodyDefaultOwner;
+							this._rigidBodyOwnerMap.set(actorId, this._rigidBodyDefaultOwner);
+						}
 					}
-				})
+				)
 			} else {
 				this._rigidBodyOwnerMap.forEach( 
-					(value, key) => {
-						if (value === userId) {
-							const actor = this.actorSet.get(key);
-							actor.owner = this._rigidBodyDefaultOwner;
-							this._rigidBodyOrphanSet.add(key);
+					(ownerId, actorId) => {
+						if (ownerId === userId) {
+							this._rigidBodyOrphanSet.add(actorId);
 						}
-					})
+					}
+				)
 			}
 		}
 	}

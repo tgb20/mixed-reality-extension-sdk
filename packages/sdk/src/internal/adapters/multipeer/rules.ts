@@ -305,8 +305,10 @@ export const Rules: { [id in Payloads.PayloadType]: Rule } = {
 				message: Message<Payloads.ActorCorrection>
 			) => {
 				const syncActor = session.actorSet.get(message.payload.actorId);
-				if (syncActor && ((client.authoritative && !syncActor.grabbedBy)
-					|| (syncActor.grabbedBy === client.id))) {
+				const attached = syncActor?.initialization.message.payload.actor.attachment;
+				if (syncActor && ((client.authoritative && !syncActor.grabbedBy) ||
+					(syncActor.grabbedBy === client.id) || 
+                    (attached && attached.userId === client.userId))) {
 					const correctionPayload = message.payload;
 
 					// Synthesize an actor update message and add in the transform from the correction payload.
@@ -327,7 +329,9 @@ export const Rules: { [id in Payloads.PayloadType]: Rule } = {
 					session.cacheActorUpdateMessage(updateMessage);
 
 					// Sync the change to the other clients.
-					session.sendPayloadToClients(correctionPayload, (value) => value.id !== client.id);
+					if (!syncActor.exclusiveToUser) {
+						session.sendPayloadToClients(correctionPayload, (value) => value.id !== client.id);
+					}
 
 					// Determine whether to forward the message to the app based on subscriptions.
 					let shouldSendToApp = false;
@@ -400,8 +404,10 @@ export const Rules: { [id in Payloads.PayloadType]: Rule } = {
 				message: Message<Payloads.ActorUpdate>
 			) => {
 				const syncActor = session.actorSet.get(message.payload.actor.id);
+				const attached = syncActor?.initialization.message.payload.actor.attachment;
 				if (syncActor && ((client.authoritative && !syncActor.grabbedBy) ||
-					(syncActor.grabbedBy === client.id))) {
+					(syncActor.grabbedBy === client.id) || 
+                    (attached && attached.userId === client.userId))) {
 					// Merge the update into the existing actor.
 					session.cacheActorUpdateMessage(message);
 

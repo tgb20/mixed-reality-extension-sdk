@@ -24,6 +24,13 @@ const server = new MRE.WebHost({
 });
 
 // Handle new application sessions
-server.adapter.onConnection((context, params) => new App(context, params, server.baseUrl));
+server.adapter.onConnection((context, params) => new App(context, params));
+
+server.ready.then(() => {
+	server.adapter.server.get('/test/timeout/:file', (req, res) => {
+		console.log("Will time out eventually:", req.url);
+		// no res.send
+	});
+});
 
 export default server;
